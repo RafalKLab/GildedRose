@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use http\Env\Response;
 use Illuminate\Http\Request;
 use App\Models\Category;
 
@@ -39,7 +40,16 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        return Category::find($id);
+        if(Category::find($id)){
+            return Category::find($id);
+        }
+        else {
+            $meesage =  [
+                "status" => false,
+                "message" => "Category not fund!"
+            ];
+            return response()->json($meesage,404);
+        }
     }
 
     /**
@@ -51,9 +61,18 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $category = Category::find($id);
-        $category->update($request->all());
-        return $category;
+        if(Category::find($id)){
+            $category = Category::find($id);
+            $category->update($request->all());
+            return $category;
+        }
+        else {
+            $meesage =  [
+                "status" => false,
+                "message" => "Category not fund!"
+            ];
+            return response()->json($meesage,404);
+        }
     }
 
     /**
@@ -65,5 +84,19 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         return Category::destroy($id);
+    }
+
+
+    /**
+     * Search items by certain category
+     *
+     * @param  str $name
+     * @return \Illuminate\Http\Response
+     */
+    public function search($name)
+    {
+        //return Category::where('name', 'like', '%' .$name. '%')->get();
+        $category = Category::where('name', 'like', '%' .$name. '%')->first();
+        return $category->items;
     }
 }

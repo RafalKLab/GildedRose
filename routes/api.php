@@ -18,8 +18,8 @@ use App\Http\Controllers\ItemController;
 */
 Route::resource('categories', CategoryController::class);
 Route::resource('items', ItemController::class);
-//Route::get('/categories', [CategoryController::class, 'index']);
-//Route::post('/categories', [CategoryController::class, 'store']);
+Route::get('/categories/search/{name}', [CategoryController::class, 'search']);
+
 
 
 
