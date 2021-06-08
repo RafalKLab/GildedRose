@@ -129,4 +129,4 @@ http://127.0.0.1:8000/api/categories/delete/posters
 * Category name must be at least 5 symbols  
 * Item name must always end in *_item*  
 * Item value at least 10, no greater than 100  
-* Item value at least -10, no greater than 50  
+* Item quality at least -10, no greater than 50  
