@@ -69,9 +69,9 @@ class ItemController extends Controller
     {
         if(Item::find($id)){
             $request->validate([
-                "name" => ['required', 'regex:/(\w)+_item$/'],
+                "name" => ['regex:/(\w)+_item$/'],
                 "value" => "numeric|between:10,100",
-                "quality" => "numeric|between:-10,100"
+                "quality" => "numeric|between:-10,50"
             ],
             [
                 'name.regex' => 'Item name must end with _item'
