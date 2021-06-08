@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\Item;
 
@@ -26,9 +27,14 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-//        $request->validate([
-//
-//        ]);
+        $request->validate([
+            "name" => ['required', 'regex:/(\w)+_item$/'],
+            "value" => "numeric|between:10,100",
+            "quality" => "numeric|between:-10,100"
+        ],
+        [
+            'name.regex' => 'Item name must end with _item'
+        ]);
         return Item::create($request->all());
     }
 
@@ -40,9 +46,16 @@ class ItemController extends Controller
      */
     public function show($id)
     {
-        //return Item::find($id);
-        $item = Item::find($id);
-        return $item;
+        if(Item::find($id)){
+            return Item::find($id);
+        }
+        else {
+            $meesage =  [
+                "status" => false,
+                "message" => "Item not found!"
+            ];
+            return response()->json($meesage,404);
+        }
     }
 
     /**
@@ -54,9 +67,26 @@ class ItemController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $item = Item::find($id);
-        $item->update($request->all());
-        return $item;
+        if(Item::find($id)){
+            $request->validate([
+                "name" => ['required', 'regex:/(\w)+_item$/'],
+                "value" => "numeric|between:10,100",
+                "quality" => "numeric|between:-10,100"
+            ],
+            [
+                'name.regex' => 'Item name must end with _item'
+            ]);
+            $item = Item::find($id);
+            $item->update($request->all());
+            return $item;
+        }
+        else {
+            $meesage =  [
+                "status" => false,
+                "message" => "Item not found!"
+            ];
+            return response()->json($meesage,404);
+        }
     }
 
     /**
@@ -67,6 +97,21 @@ class ItemController extends Controller
      */
     public function destroy($id)
     {
-        return Item::destroy($id);
+        if(Item::find($id)){
+            Item::destroy($id);
+            $meesage =  [
+                "status" => true,
+                "message" => "Item deleted!",
+                "id" => $id
+            ];
+            return response()->json($meesage,404);
+        }
+        else {
+            $meesage =  [
+                "status" => false,
+                "message" => "Item not found!"
+            ];
+            return response()->json($meesage,404);
+        }
     }
 }

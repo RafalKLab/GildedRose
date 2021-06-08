@@ -19,9 +19,7 @@ use App\Http\Controllers\ItemController;
 Route::resource('categories', CategoryController::class);
 Route::resource('items', ItemController::class);
 Route::get('/categories/search/{name}', [CategoryController::class, 'search']);
-
-
-
+Route::delete('/categories/delete/{name}', [CategoryController::class, 'deleteByCategory']);
 
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {

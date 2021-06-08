@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use http\Env\Response;
 use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Models\Item;
 
 class CategoryController extends Controller
 {
@@ -46,7 +47,7 @@ class CategoryController extends Controller
         else {
             $meesage =  [
                 "status" => false,
-                "message" => "Category not fund!"
+                "message" => "Category not found!"
             ];
             return response()->json($meesage,404);
         }
@@ -62,6 +63,9 @@ class CategoryController extends Controller
     public function update(Request $request, $id)
     {
         if(Category::find($id)){
+            $request->validate([
+                'name' => 'Required|min:5'
+            ]);
             $category = Category::find($id);
             $category->update($request->all());
             return $category;
@@ -83,9 +87,22 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        return Category::destroy($id);
+        if(Category::destroy($id)){
+             $meesage =  [
+                 "status" => true,
+                 "message" => "Category has been deleted",
+                 "id" => $id
+             ];
+            return response()->json($meesage,200);
+        }
+        else {
+            $meesage =  [
+                "status" => false,
+                "message" => "Category not fund!"
+            ];
+            return response()->json($meesage,404);
+        }
     }
-
 
     /**
      * Search items by certain category
@@ -95,8 +112,44 @@ class CategoryController extends Controller
      */
     public function search($name)
     {
-        //return Category::where('name', 'like', '%' .$name. '%')->get();
-        $category = Category::where('name', 'like', '%' .$name. '%')->first();
-        return $category->items;
+        $category = Category::where('name', $name)->first();
+        //Explanation: category must exist and can not be empty
+        if($category AND !$category->items->isEmpty()){
+            return $category->items;
+        }
+        else{
+            $meesage =  [
+                "status" => false,
+                "message" => "Category items not fund!"
+            ];
+            return response()->json($meesage,404);
+        }
+    }
+
+    /**
+     * Delete items by certain category
+     *
+     * @param  str $name
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteByCategory($name){
+        $category = Category::where('name', $name)->first();
+        if($category){
+            foreach ($category->items as $item){
+                Item::destroy($item->id);
+            }
+            $meesage =  [
+                "status" => true,
+                "message" => "Category items deleted!"
+            ];
+            return response()->json($meesage,200);
+        }
+        else{
+            $meesage =  [
+                "status" => false,
+                "message" => "Category items not fund!"
+            ];
+            return response()->json($meesage,404);
+        }
     }
 }
